@@ -25,7 +25,7 @@ void entrarNoLobby(NoLobby*& topo, int id, std::string nome) {
     
     // Insere no início da lista (Lobby)
     novoNo->proximo = topo;
-    topo = novoNo;
+    topo = topo= novoNo;
     
     std::cout << nome << " entrou no lobby com sucesso!\n";
 }
@@ -84,6 +84,7 @@ void realizarLogin(FilaLogin& fila) {
 
 /*3. O Botão "Desfazer" Rápido (Implementando o conceito LIFO)
 Para reverter a última jogada de forma instantânea, empilham-se as ações. O botão "Desfazer" apenas retira o elemento do topo da pilha.*/
+
 // Estrutura que representa uma ação no jogo
 struct Jogada {
     int idJogada;
@@ -118,4 +119,46 @@ void desfazerJogada(NoPilha*& topo) {
     
     topo = topo->proximo; // O elemento de baixo vira o novo topo
     delete temp;          // Libera a memória da ação desfeita
+}
+
+// ==========================================
+// FUNÇÃO PRINCIPAL (Ponto de Partida do C++)
+// ==========================================
+int main() {
+    // 1. Inicializando os ponteiros de controle das estruturas como vazios
+    NoLobby* meuLobby = nullptr;
+    FilaLogin minhaFila; 
+    NoPilha* meuHistoricoDeJogadas = nullptr;
+
+    std::cout << "=== SIMULACAO DO SERVIDOR - KINGDOMS ONLINE ===\n\n";
+
+    // --- TESTE 1: LOBBY DINÂMICO (Sem limite de 100) ---
+    std::cout << "[Testando o Lobby Dinamico]\n";
+    entrarNoLobby(meuLobby, 1, "Michelle_Dev");
+    entrarNoLobby(meuLobby, 2, "Player_Gamer");
+    std::cout << "\n";
+
+    // --- TESTE 2: FILA DE LOGIN JUSTA (FIFO) ---
+    std::cout << "[Testando Fila de Login - FIFO]\n";
+    entrarNaFila(minhaFila, 10, "Arthur_99");
+    entrarNaFila(minhaFila, 11, "Lucas_Gamer");
+    entrarNaFila(minhaFila, 12, "Carla_Pro");
+    
+    std::cout << "\nLiberando acessos:\n";
+    realizarLogin(minhaFila); // Deve autorizar o Arthur_99 (chegou primeiro)
+    realizarLogin(minhaFila); // Deve autorizar o Lucas_Gamer
+    std::cout << "\n";
+
+    // --- TESTE 3: BOTAO DESFAZER (LIFO/Pilha) ---
+    std::cout << "[Testando Historico de Acoes - LIFO]\n";
+    registrarJogada(meuHistoricoDeJogadas, 101, "Mover_Tropa_A1");
+    registrarJogada(meuHistoricoDeJogadas, 102, "Construir_Quartel");
+    registrarJogada(meuHistoricoDeJogadas, 103, "Atacar_Castelo_Inimigo");
+
+    std::cout << "\nClicando no botao Desfazer:\n";
+    desfazerJogada(meuHistoricoDeJogadas); // Deve desfazer a ultima (Atacar_Castelo_Inimigo)
+    desfazerJogada(meuHistoricoDeJogadas); // Deve desfazer a penultima (Construir_Quartel)
+    
+    std::cout << "\n================================================\n";
+    return 0;
 }
